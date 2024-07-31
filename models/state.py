@@ -1,29 +1,29 @@
 #!/usr/bin/python3
 """ State Module for HBNB project """
 from models.base_model import BaseModel, Base
-
-from sqlalchemy import MetaData, Column, String
+from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
+from os import getenv
+from models.city import City
 
 
 class State(BaseModel, Base):
     """ State class """
-    __tablename__ = 'states'
-    name = Column(String(128), nullable=False)
-    cities = relationship("City", backref='state',
-                          cascade="all, delete, delete-orphan")
 
-    @property
-    def cities(self):
-        """ cities getter for fileStorage option
-        Returns all cities whose state_id == current state's id (self.id) """
-        # get all City objects and filter w.r.t state_id
-        from models import storage
-        storage.reload()  # reload objects from storage file
-        all_cities = storage.all(City)  # returns a dict of objects
-        state_cities = {}
-        if all_cities:
-            for key, val in all_cities.items():
-                if self.id in val:
-                    state_cities[key] = val
-        return state_cities
+    __tablename__ = 'states'
+    if getenv('HBNB_TYPE_STORAGE') == "db":
+        name = Column(String(128), nullable=False)
+        cities = relationship('City', cascade="all,delete", backref="state")
+    else:
+        name = ""
+
+        @property
+        def cities(self):
+            """getter docuemnt"""
+            from models import storage
+            citiesList = []
+            citiesAll = storage.all(City)
+            for city in citiesAll.values():
+                if city.state_id == self.id:
+                    citiesList.append(city)
+            return citiesList
