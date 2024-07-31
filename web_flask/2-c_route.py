@@ -1,35 +1,30 @@
 #!/usr/bin/python3
-"""Starts a Flask web application."""
-from flask import Flask
+""" Starts a Flask application that MUST be lisening on 0.0.0.0, port 5000.
+"""
+from flask import Flask, escape
+
 
 app = Flask(__name__)
-app.url_map.strict_slashes = False
+app.url_map.strict_slashes = False  # override default globally
 
 
 @app.route('/')
-def home():
-    """
-    Displays Hello HBNB! msg
-    """
-    return 'Hello HBNB!'
+def hello_world():
+    """ Returns 'Hello HBNB' """
+    return "Hello HBNB!"
 
 
 @app.route('/hbnb')
-def hbnb():
-    """
-    Displays HBNB msg
-    """
-    return 'HBNB'
+def hello_world_2():
+    """ Returns 'HBNB' """
+    return "HBNB"
 
 
 @app.route('/c/<text>')
-def c_pluse_params(text):
-    """
-    Displays C <text> msg
-    """
-    without_underscor = text.replace('_', '  ')
-    return 'C {}'.format(without_underscor)
+def hello_world_3(text):
+    """ Returns 'C' followed by (space replaced underscores) text """
+    return "C {}".format(escape(text).replace('_', ' '))
 
 
-if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
